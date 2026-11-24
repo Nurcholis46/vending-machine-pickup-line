@@ -34,7 +34,12 @@ if (codePoints < 1 || codePoints > 200 || text.trim().length === 0) {
     `entry must be 1-200 characters of non-blank text, got ${codePoints}`,
   );
 }
-if (text.includes("\n") || text.includes("\r")) {
+if (
+  text.includes("\n") ||
+  text.includes("\r") ||
+  text.includes("\u2028") ||
+  text.includes("\u2029")
+) {
   throw new Error("entry must be a single line");
 }
 if (text !== text.trim()) {
@@ -45,7 +50,7 @@ if (/[\u0000-\u001f\u007f]/.test(text)) {
 }
 
 mkdirSync("/output", { recursive: true });
-writeFileSync("/output/entry.txt", text, "utf8");
+writeFileSync("/output/entry.txt", text, { encoding: "utf8", mode: 0o644 });
 
 // Read it back and prove the file on disk is exactly the line: a write
 // that silently truncated, re-encoded or padded the entry would otherwise
